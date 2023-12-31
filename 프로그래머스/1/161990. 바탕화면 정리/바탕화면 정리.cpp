@@ -1,32 +1,25 @@
+#include <string>
 #include <vector>
-#include <iostream>
 
 using namespace std;
 
 vector<int> solution(vector<string> wallpaper) {
-	vector<int> answer;	
-	int eRow = 0, eCol = 0;
-	int sRow = 0, sCol = 0;
-	bool startNode = false;
+    vector<int> answer;
+    int Lcol = 99, Rcol = 0, Trow=99, Brow=0;
+    for (int i = 0; i < wallpaper.size(); i++) {        
+        for (int j = 0; j < wallpaper[i].size(); j++) {
+            if (wallpaper[i][j] == '#') {
+                Lcol = Lcol > j ? j : Lcol;
+                Rcol = Rcol < j ? j : Rcol;
+                Trow = Trow > i ? i : Trow;
+                Brow = Brow < i ? i : Brow;
+            }
+        }
+    }
+    answer.emplace_back(Trow);
+    answer.emplace_back(Lcol);
+    answer.emplace_back(Brow+1);
+    answer.emplace_back(Rcol+1);
 
-	for (int i = 0; i < wallpaper.size(); i++) {
-		for (int j = 0; j < wallpaper[i].size(); j++) {
-			if (wallpaper[i][j] == '#') {
-				if (!startNode) {
-					sRow = i, sCol = j;
-					startNode = true;
-				}
-				if (sRow > i) sRow = i;
-				if (sCol > j) sCol = j;
-				if (eCol < j) eCol = j;
-				if (eRow < i) eRow = i;
-			}
-		}
-	}	
-	answer.push_back(sRow);
-	answer.push_back(sCol);
-	answer.push_back(eRow+1);
-	answer.push_back(eCol+1);
-	
-	return answer;
+    return answer;
 }
