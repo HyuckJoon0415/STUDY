@@ -1,59 +1,57 @@
+#include <queue>
 #include <iostream>
 #include <vector>
 #include <string>
-#include <queue>
 using namespace std;
 
-int D[4][2] = {
-	{-1,0}, //up
-	{1,0},	//down
-	{0,-1},	//left
-	{0,1}	//right
+struct Point {
+	int x, y, d;
 };
-int N, M;
 
+int n, m;
+int D[4][2] = {
+	{-1,0},
+	{1,0},
+	{0,-1},
+	{0,1}
+};
 
-int bfs(vector<string> maze,vector<vector<int>> dist) {
-	vector<vector<bool>> visited(N, vector<bool>(M, false));	
-	queue<pair<int,int>> myq;
+int path(vector<vector<char>> g) {
+	vector<vector<bool>> v(n, vector<bool>(m, false));
+	queue<Point> q;
+	q.push({ 0,0,1 });
 
-	myq.emplace(0, 0);
-	dist[0][0] = 1;
+	while (!q.empty()) {
+		Point cur = q.front();
+		q.pop();
 
-	while (!myq.empty()) {
-		pair<int, int> cur = myq.front();
-		myq.pop();
+		if (cur.x == n - 1 && cur.y == m - 1) return cur.d;
 
-		if (cur.first == N - 1 && cur.second == M - 1) {
-			return dist[cur.first][cur.second];
-		}
+		if (v[cur.x][cur.y]) continue;
+		v[cur.x][cur.y] = true;
 
 		for (int i = 0; i < 4; i++) {
-			int cr = cur.first + D[i][0];
-			int cc = cur.second + D[i][1];
-			if (cr >= N || cc >= M || cr < 0 || cc < 0) continue;
-			if (visited[cr][cc]) continue;
-			if (maze[cr][cc] == '0') continue;
-			visited[cr][cc] = true;
-			dist[cr][cc] = dist[cur.first][cur.second] + 1;
-			myq.emplace(cr, cc);
+			int nx = cur.x + D[i][0], ny = cur.y + D[i][1];
+			if (nx<0 || nx>n - 1 || ny<0 || ny>m - 1) continue;
+			if (g[nx][ny] == '0') continue;
+			if (v[nx][ny]) continue;
+			q.push({ nx,ny,cur.d + 1 });
 		}
 	}
-
 }
 
-int main(void) {	
-	cin >> N >> M;
-	
-	vector<string> maze;
-	vector<vector<int>> dist(N, vector<int>(M, 0));
+int main(void) {
+	cin >> n >> m;
 
-	for (int i = 0; i < N; i++) {
-		string temp;
-		cin >> temp;
-		maze.emplace_back(temp);
+	vector<vector<char>> g(n, vector<char>(m, 0));
+	string s;
+
+	for (int i = 0; i < n; i++) {
+		cin >> s;
+		for (int j = 0; j < m; j++) g[i][j] = s[j];
 	}
 
-	cout << bfs(maze,dist);
+	cout << path(g);
+
 	return 0;
 }
