@@ -1,67 +1,66 @@
 #include <iostream>
-#include <stack>
-#include <queue>
+#include <unordered_map>
 #include <vector>
+#include <queue>
+#include <algorithm>
+
 using namespace std;
 
-int n, m;
 
-void dfs(vector<vector<int>> graph, vector<bool> visited, int v) {
-	stack<int> s;
-	s.push(v);
+void dfs(vector<vector<int>>& graph, vector<bool>& visited, int node) {
+	visited[node] = true;
+	cout << node << ' ';
 
-	while (!s.empty()) {
-		int cur = s.top();
-		s.pop();
-
-		if (visited[cur]) continue;
-
-		visited[cur] = true;
-		cout << cur + 1 << ' ';
-		for (int i = n - 1; i >= 0; i--) {
-			if (!visited[i] && graph[cur][i] == 1) {
-				s.push(i);
-			}
+	for (int i = 0; i < graph[node].size(); i++) {
+		int next = graph[node][i];
+		if (!visited[next]) {
+			dfs(graph, visited, next);
 		}
 	}
-
 }
 
-void bfs(vector<vector<int>> graph, vector<bool> visited, int v) {
+void bfs(vector<vector<int>>& graph, vector<bool>& visited, int node) {
 	queue<int> q;
-	q.push(v);
+	q.push(node);
+	visited[node] = true;
 
 	while (!q.empty()) {
 		int cur = q.front();
 		q.pop();
+		cout << cur << ' ';
 
-		if (visited[cur]) continue;
-
-		visited[cur] = true;
-		cout << cur + 1 << ' ';
-		for (int i = 0; i < n; i++) {
-			if (!visited[i] && graph[cur][i] == 1) {
-				q.push(i);
+		for (int i = 0; i < graph[cur].size(); i++) {
+			int next = graph[cur][i];
+			if (!visited[next]) {
+				q.push(next);
+				visited[next] = true;
 			}
 		}
+		
 	}
 }
 
-int main(void) {
-	int v = 0;
-	cin >> n >> m >> v;
-	vector<vector<int>> graph(n, vector<int>(n, 0));
-	vector<bool> visited(n, false);
+int main() {
+	int N = 0, M = 0, V = 0;
+	cin >> N >> M >> V;
 
-	for (int i = 0; i < m; i++) {
-		int a = 0, b = 0;
-		cin >> a >> b;
-		a--; b--;
-		graph[a][b] = graph[b][a] = 1;
+	vector<vector<int>> graph(N + 1);
+	vector<bool> visited(N + 1, false);
+
+	for (int i = 0; i < M; i++) {
+		int u = 0, v = 0;
+		cin >> u >> v;
+		graph[u].push_back(v);
+		graph[v].push_back(u);
 	}
-	dfs(graph, visited, v - 1);
+
+	for (int i = 0; i < N + 1; i++) {
+		sort(graph[i].begin(), graph[i].end());
+	}
+	dfs(graph, visited, V);
+	fill(visited.begin(), visited.end(), false);
 	cout << endl;
-	bfs(graph, visited, v - 1);
+	bfs(graph, visited, V);
 
 	return 0;
 }
